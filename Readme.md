@@ -61,7 +61,7 @@ You can find all dependencies and scripts in the `package.json` file.
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/omarfarquek05/YouTube-Clone-Backend.git
 cd your-repo
 npm install
 ```
