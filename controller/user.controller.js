@@ -7,6 +7,8 @@ import ApiResponse from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import path from "path";
+import { sendWelcomeEmail, sendOtpEmail } from "../utils/sendEmail.js";
+
 
 // Generate access and refresh token function
 const generateAccessAndRefereshTokens = async (userId) => {
@@ -144,6 +146,9 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
+  // ✅ Send welcome email
+await sendWelcomeEmail(email, "http://localhost:8000/api/v1/users/login");
+ 
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
@@ -229,6 +234,84 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
+// TODO : sending OTP to the user
+// Generate otp email 
+const sendOtpToUser = asyncHandler(async (req, res) => {
+   try {
+    const { email } = req.body;
+
+     if (!email) {
+       throw new ApiError(400, "Email is required")
+     }
+
+     const user = await User.findOne({ email });
+     
+     if (!user) {
+       throw new ApiError(400, "User not found")
+     }
+    
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpiresAt = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
+    await user.save();
+       
+     await sendOtpEmail(email, otp); // Pass user's email and generated OTP
+
+     res.status(200).json( new ApiResponse(200, "OTP sent successfully"));
+       
+   } catch (error) {
+     throw new ApiError(500, "Something went wrong while sending otp to the user")
+   }
+})
+
+// Todo : Reset Passowrd 
+const resetPassword = asyncHandler(async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    throw new ApiError(400, "Email, OTP, and new password are required");
+  }
+
+  //const user = await User.findOne({ email });
+  const user = await User.findOne({ email: email.toLowerCase().trim() }).select("+otp +otpExpiresAt");
+  console.log("user is:", user);
+  console.log("stored OTP:", user?.otp, "provided OTP:", otp);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+    if (String(user.otp) !== String(otp)) {
+    throw new ApiError(400, "Invalid OTP");
+  }
+
+  if (user.otpExpiresAt < new Date()) {
+    throw new ApiError(400, "OTP has expired");
+  }
+
+    {/* 
+
+  if (user.otp !== otp) {
+    throw new ApiError(400, "Invalid OTP");
+  }
+
+  if (user.otpExpiresAt < new Date()) {
+    throw new ApiError(400, "OTP has expired");
+  }
+ */}
+
+  user.password = newPassword;
+  user.otp = undefined;
+  user.otpExpiresAt = undefined;
+
+  await user.save();
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, null, "Password reset successful"));
+});
+
+
 // Refresh Token for re login without giving password
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
@@ -275,6 +358,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, error?.message || "Invalid refresh token");
   }
 });
+
 
 // Change current password
 const changeCurrentPassword = asyncHandler(async (req, res) => {
@@ -556,4 +640,6 @@ export {
   updateUserAvatar,
   getUserChannelProfile,
   getWatchHistory,
+  sendOtpToUser,
+  resetPassword,
 };

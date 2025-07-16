@@ -14,6 +14,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 - RESTful API endpoints
 - Database integration
 - Authentication & Authorization
+- Sending custom e-mail notification using resend email service  
 - custom Error handling
 - Custom Api Response
 - Custom Middleware handling
@@ -52,6 +53,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 - **multer**: File uploads
 - **nodemon**: Development server auto-restart
 - **prettier**: Code formatting
+- resend : e-mail service
 
 #### License
 
@@ -81,6 +83,8 @@ npm run dev
     /route
     /middleware
     /utils
+    /service
+    /lib
     /db
     /public/temp
 ```
@@ -103,6 +107,8 @@ REFRESH_TOKEN_EXPIRY=10d
 CLOUDINARY_CLOUD_NAME=Your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=Your_cloudinary_api_key
 CLOUDINARY_API_SECRET=Your_cloudinary_api_secret_key
+
+RESEND_API_KEY=Your_resend_api_key
 ```
 
 ## License

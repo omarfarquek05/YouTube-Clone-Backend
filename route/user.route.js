@@ -4,7 +4,7 @@ import {verifyJWT} from "../middleware/auth.middleware.js"
 import { testeApi,registerUser, generateAccessAndRefereshTokens, 
           loginUser, logoutUser,refreshAccessToken,changeCurrentPassword,
           getCurrentUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage,
-          getWatchHistory, getUserChannelProfile,
+          getWatchHistory, getUserChannelProfile,sendOtpToUser,resetPassword,
          } 
            from '../controller/user.controller.js';
 
@@ -39,6 +39,13 @@ router.route("/logout").post(verifyJWT, logoutUser)
 
 //Access Token Refresh url
 router.route("/refresh-token").post(refreshAccessToken)
+
+// Forget password and send otp in email
+router.post("/forgot-password", sendOtpToUser); 
+
+// Todo : resetPassword
+// Reset password 
+router.post("/reset-password", resetPassword); 
 
 // Change current password 
 router.route("/change-password").post( verifyJWT , changeCurrentPassword)

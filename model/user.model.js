@@ -16,7 +16,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      lowecase: true,
+      lowercase: true,
       trim: true,
     },
     password: {
@@ -31,22 +31,30 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
+    otp: {
+      type: String,
+      select: false,
+    },
+    otpExpiresAt: {
+      type: Date,
+      index: { expires: 0 },
+    },
     avatar: {
-      public_id: { 
+      public_id: {
         type: String,
-        required: true 
+        required: true,
       },
       secure_url: {
-         type: String, 
-         required: true 
-        },
+        type: String,
+        required: true,
+      },
     },
     coverImage: {
       public_id: {
-         type: String 
-        },
-      secure_url: { 
-        type: String 
+        type: String,
+      },
+      secure_url: {
+        type: String,
       },
     },
     watchHistory: [
