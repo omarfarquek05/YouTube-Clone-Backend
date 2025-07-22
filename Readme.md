@@ -19,6 +19,7 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 - Custom Api Response
 - Custom Middleware handling
 - File handling such as image/video handing with cloudinary
+- Optimize Api with rate limiter for better performance
 
 ## Getting Started
 
@@ -53,7 +54,11 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 - **multer**: File uploads
 - **nodemon**: Development server auto-restart
 - **prettier**: Code formatting
-- resend : e-mail service
+- resend: E-mail service
+- express-rate-limit: Basic late limiting
+- rate-limit-redis: Better memorization with express rate limiter
+- ioredis: Creating Redis client
+
 
 #### License
 

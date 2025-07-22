@@ -1,5 +1,6 @@
 import {Router} from 'express';
-import {upload} from "../middleware/multer.middleware.js"
+import { upload } from "../middleware/multer.middleware.js"
+import { limiter, limiterWithRedis } from '../middleware/lateLimitor.middleware.js';
 import {verifyJWT} from "../middleware/auth.middleware.js"
 import { testeApi,registerUser, generateAccessAndRefereshTokens, 
           loginUser, logoutUser,refreshAccessToken,changeCurrentPassword,
@@ -40,15 +41,15 @@ router.route("/logout").post(verifyJWT, logoutUser)
 //Access Token Refresh url
 router.route("/refresh-token").post(refreshAccessToken)
 
-// Forget password and send otp in email
-router.post("/forgot-password", sendOtpToUser); 
+// Forget password and send otp in email and also used late limiting
+router.post("/forgot-password",  limiter, sendOtpToUser); 
 
 // Todo : resetPassword
 // Reset password 
 router.post("/reset-password", resetPassword); 
 
-// Change current password 
-router.route("/change-password").post( verifyJWT , changeCurrentPassword)
+// Change current password and limiter with redis 
+router.route("/change-password").post( verifyJWT , limiterWithRedis, changeCurrentPassword)
 
 // Get Current user
 router.route("/current-user").get(verifyJWT, getCurrentUser)
